@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.web.HTMLEditor?>
+<?import javafx.scene.web.WebView?>
+
+<StackPane fx:id="mainContainer" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.personaldiarymanagergui.DiaryController">
+
+    <!-- View 1: The HTML Dashboard -->
+    <WebView fx:id="entryViewer" />
+
+    <!-- View 2: The Editor Overlay (Initially Hidden) -->
+    <VBox fx:id="editorContainer" visible="false" style="-fx-background-color: white;">
+        <ToolBar>
+            <Button text="Save Entry" onAction="#onSaveButtonClick"/>
+            <Button text="Cancel" onAction="#onCancelButtonClick"/>
+        </ToolBar>
+        <VBox spacing="5" style="-fx-padding: 10;">
+            <TextField fx:id="entryTitleField" promptText="Entry Title" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+        </VBox>
+        <HTMLEditor fx:id="entryEditor" VBox.vgrow="ALWAYS"/>
+    </VBox>
+
+</StackPane>

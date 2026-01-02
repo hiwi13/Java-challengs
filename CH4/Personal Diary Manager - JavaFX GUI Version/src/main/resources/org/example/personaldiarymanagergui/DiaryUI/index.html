@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Diary</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="logo">My Diary</h2>
+
+        <nav>
+            <a href="#" class="active" onclick="showSection('today', this)">📅 Today</a>
+            <a href="#" onclick="showSection('calendar', this)">🗓 Calendar</a>
+            <a href="#" onclick="showSection('settings', this)">⚙ Settings</a>
+        </nav>
+
+        <div class="profile">
+            <img src="https://i.pravatar.cc/60" alt="profile">
+            <span>Addishiwot abdisa</span>
+        </div>
+    </aside>
+
+    <!-- Entries List -->
+    <section class="entries">
+        <h3>Entries</h3>
+        <div id="sidebar-entries-list">
+            <!-- Sidebar entries will be generated here -->
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="content">
+
+        <!-- Today View (Feed of today's entries) -->
+        <div id="today-view">
+            <h1 id="currentDate">Tuesday, October 26</h1>
+            <div id="today-entries-container">
+                <!-- Entry cards will be generated here -->
+            </div>
+            <button class="fab" onclick="diaryApp.openNewEntryEditor()">+</button>
+        </div>
+
+        <!-- Single Entry View -->
+        <div id="single-entry-view" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <button onclick="showSection('today', document.querySelector('.sidebar nav a:first-child'))" style="border: none; background: none; cursor: pointer; color: #3b82f6; font-size: 16px;">&larr; Back to Today</button>
+                <button id="edit-entry-btn" style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">Edit Entry</button>
+            </div>
+            <div id="single-entry-content">
+                <!-- Single entry content will be generated here -->
+            </div>
+        </div>
+
+        <!-- Calendar View -->
+        <div id="calendar-view" style="display: none;">
+            <div class="calendar-header">
+                <button onclick="changeMonth(-1)">&#8249;</button>
+                <h2 id="calendarMonthYear">Month Year</h2>
+                <button onclick="changeMonth(1)">&#8250;</button>
+            </div>
+            <div class="card">
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar days will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="settings-view" style="display: none;">
+            <h1>Settings</h1>
+            <div class="card">
+                <h2>Appearance</h2>
+                <p>Choose your preferred theme:</p>
+                <div class="theme-options">
+                    <button class="theme-btn active" onclick="setTheme('light', this)">Light Mode</button>
+                    <button class="theme-btn" onclick="setTheme('dark', this)">Dark Mode</button>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Notifications</h2>
+                <p>Daily Reminders:</p>
+                <div class="theme-options">
+                    <button class="theme-btn active" onclick="setNotifications(true, this)">On</button>
+                    <button class="theme-btn" onclick="setNotifications(false, this)">Off</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+    // Sample Data
+    let entriesData = [
+        {
+            id: 1,
+            title: "Morning Reflections",
+            date: new Date(), // Today
+            content: "Today started with a quiet coffee on the porch. The air was crisp, and the leaves are finally starting to turn that brilliant shade of orange. It's my favorite time of year."
+        },
+        {
+            id: 2,
+            title: "Project Update",
+            date: new Date(new Date().getTime() - 2 * 60 * 60 * 1000), // 2 hours ago
+            content: "Managed to finally tackle that project I’ve been putting off. The feeling of checking it off my list is incredible."
+        },
+        {
+            id: 3,
+            title: "Gratitude Journal",
+            date: new Date(new Date().setDate(new Date().getDate() - 1)), // Yesterday
+            content: "Grateful for the support of my friends and family. Sometimes it's the little things that matter the most."
+        }
+    ];
+
+    let currentCalendarDate = new Date();
+
+    function init() {
+        updateHeaderDate();
+        renderSidebarEntries();
+        renderTodayEntries();
+    }
+
+    function updateHeaderDate() {
+        const now = new Date();
+        const headerOptions = { weekday: 'long', month: 'long', day: 'numeric' };
+        const dateElement = document.getElementById('currentDate');
+        if (dateElement) {
+            dateElement.textContent = now.toLocaleDateString('en-US', headerOptions);
+        }
+    }
+
+    function renderSidebarEntries() {
+        const container = document.getElementById('sidebar-entries-list');
+        container.innerHTML = '';
+
+        const timeOptions = { hour: 'numeric', minute: '2-digit' };
+        const dateOptions = { month: 'long', day: 'numeric' };
+
+        entriesData.forEach(entry => {
+            const div = document.createElement('div');
+            div.className = 'entry-item';
+            div.onclick = () => showSingleEntry(entry.id);
+
+            const h4 = document.createElement('h4');
+            h4.textContent = entry.title;
+
+            const p = document.createElement('p');
+            const isToday = entry.date.toDateString() === new Date().toDateString();
+            if (isToday) {
+                p.textContent = entry.date.toLocaleDateString('en-US', dateOptions) + ", " + entry.date.toLocaleTimeString('en-US', timeOptions);
+            } else {
+                p.textContent = entry.date.toLocaleDateString('en-US', dateOptions);
+            }
+
+            div.appendChild(h4);
+            div.appendChild(p);
+            container.appendChild(div);
+        });
+    }
+
+    function renderTodayEntries() {
+        const container = document.getElementById('today-entries-container');
+        container.innerHTML = '';
+
+        entriesData.forEach(entry => {
+            const article = document.createElement('article');
+            article.className = 'card';
+            article.onclick = () => showSingleEntry(entry.id);
+            article.style.cursor = 'pointer';
+
+            const h2 = document.createElement('h2');
+            h2.textContent = entry.title;
+
+            const p = document.createElement('p');
+            // Strip HTML tags for preview
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = entry.content;
+            p.textContent = tempDiv.textContent || tempDiv.innerText || "";
+
+            article.appendChild(h2);
+            article.appendChild(p);
+            container.appendChild(article);
+        });
+    }
+
+    function showSingleEntry(id) {
+        const entry = entriesData.find(e => e.id === id);
+        if (!entry) return;
+
+        // Hide other views
+        document.getElementById('today-view').style.display = 'none';
+        document.getElementById('calendar-view').style.display = 'none';
+        document.getElementById('settings-view').style.display = 'none';
+
+        // Show single entry view
+        const view = document.getElementById('single-entry-view');
+        view.style.display = 'block';
+
+        const container = document.getElementById('single-entry-content');
+        container.innerHTML = '';
+
+        const article = document.createElement('article');
+        article.className = 'card';
+
+        const h1 = document.createElement('h1');
+        h1.textContent = entry.title;
+        h1.style.marginBottom = '10px';
+
+        const meta = document.createElement('p');
+        meta.style.color = '#777';
+        meta.style.marginBottom = '20px';
+        meta.textContent = entry.date.toLocaleString('en-US', { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+
+        const content = document.createElement('div');
+        content.innerHTML = entry.content; // Render HTML content
+
+        article.appendChild(h1);
+        article.appendChild(meta);
+        article.appendChild(content);
+        container.appendChild(article);
+
+        // Setup Edit Button
+        const editBtn = document.getElementById('edit-entry-btn');
+        editBtn.onclick = () => {
+            // Call Java method
+            diaryApp.editEntry(entry.id, entry.title, entry.content);
+        };
+    }
+
+    // Called from Java after saving an edit
+    function updateEntry(id, title, content) {
+        const entryIndex = entriesData.findIndex(e => e.id === id);
+        if (entryIndex !== -1) {
+            entriesData[entryIndex].title = title;
+            entriesData[entryIndex].content = content;
+
+            // Refresh views
+            renderSidebarEntries();
+            renderTodayEntries();
+            showSingleEntry(id); // Refresh the single entry view
+        }
+    }
+
+    function showSection(sectionId, element) {
+        // Update active state in sidebar
+        document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
+        if (element) element.classList.add('active');
+
+        // Hide all views
+        document.getElementById('today-view').style.display = 'none';
+        document.getElementById('calendar-view').style.display = 'none';
+        document.getElementById('settings-view').style.display = 'none';
+        document.getElementById('single-entry-view').style.display = 'none';
+
+        // Show selected view
+        document.getElementById(sectionId + '-view').style.display = 'block';
+
+        if (sectionId === 'calendar') {
+            renderCalendar();
+        }
+    }
+
+    function renderCalendar() {
+        const year = currentCalendarDate.getFullYear();
+        const month = currentCalendarDate.getMonth();
+
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        document.getElementById('calendarMonthYear').textContent = `${monthNames[month]} ${year}`;
+
+        const grid = document.getElementById('calendarGrid');
+        grid.innerHTML = '';
+
+        // Day Headers
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        days.forEach(day => {
+            const div = document.createElement('div');
+            div.className = 'calendar-day-header';
+            div.textContent = day;
+            grid.appendChild(div);
+        });
+
+        // Days
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        // Empty slots before first day
+        for (let i = 0; i < firstDay; i++) {
+            const div = document.createElement('div');
+            div.className = 'calendar-day empty';
+            grid.appendChild(div);
+        }
+
+        // Days of the month
+        const today = new Date();
+        for (let i = 1; i <= daysInMonth; i++) {
+            const div = document.createElement('div');
+            div.className = 'calendar-day';
+            div.textContent = i;
+
+            if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
+                div.classList.add('today');
+            }
+
+            grid.appendChild(div);
+        }
+    }
+
+    function changeMonth(offset) {
+        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + offset);
+        renderCalendar();
+    }
+
+    function setTheme(theme, btn) {
+        if (theme === 'dark') {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+
+        // Update button states
+        const parent = btn.parentElement;
+        parent.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    function setNotifications(isOn, btn) {
+        // Update button states
+        const parent = btn.parentElement;
+        parent.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        console.log("Notifications set to: " + (isOn ? "On" : "Off"));
+    }
+
+    // Initialize the app
+    init();
+</script>
+
+</body>
+</html>
