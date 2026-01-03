@@ -1,0 +1,96 @@
+.root {
+    /* The background image is now set programmatically in HelloApplication.java */
+    /* to avoid pathing issues. This rule is intentionally left blank. */
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.app-container {
+    -fx-background-color: rgba(0, 0, 0, 0.25);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 10); /* Simulate backdrop filter somewhat with shadow/overlay */
+    -fx-background-radius: 30;
+    -fx-padding: 25;
+}
+
+/* Search Bar */
+.search-field {
+    -fx-background-radius: 30;
+    -fx-background-color: white;
+    -fx-padding: 12 20;
+    -fx-prompt-text-fill: gray;
+    -fx-font-size: 14px;
+}
+
+.search-button {
+    -fx-background-radius: 30; /* Circular button approximation */
+    -fx-background-color: white;
+    -fx-text-fill: black;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-padding: 12 15;
+}
+
+/* Weather Card */
+.weather-card {
+    -fx-background-color: rgba(255, 255, 255, 0.25);
+    -fx-background-radius: 25;
+    -fx-padding: 30;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 30, 0, 0, 10);
+}
+
+.city-heading {
+    -fx-text-fill: white;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+.temp-text {
+    -fx-text-fill: white;
+    -fx-font-size: 64px;
+    -fx-font-weight: bold;
+}
+
+.weather-condition {
+    -fx-text-fill: #e0e0e0;
+    -fx-font-size: 18px;
+}
+
+.details-text {
+    -fx-text-fill: #d0d0d0;
+    -fx-font-size: 14px;
+}
+
+/* Right side icon placeholder styling */
+.sun-shape {
+    -fx-fill: rgba(255,255,255,0.6);
+}
+
+/* Forecast */
+.forecast-box {
+    -fx-spacing: 10;
+    -fx-alignment: center;
+}
+
+.forecast-day-card {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-background-radius: 20;
+    -fx-padding: 15;
+    -fx-alignment: center;
+    -fx-min-width: 100;
+}
+
+.forecast-day-title {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.forecast-temp {
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.forecast-desc {
+    -fx-text-fill: #e0e0e0;
+    -fx-font-size: 12px;
+}
